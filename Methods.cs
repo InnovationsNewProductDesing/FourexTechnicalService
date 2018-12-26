@@ -5,14 +5,17 @@ using MailKit;
 using System.Collections;
 using RestSharp;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using Android.Widget;
+using Android.App;
+using Android.Support.V7.App;
+using Android.OS;
 
 namespace Fourex.Droid
 {
 
     public class Methods
     {
-
-
         public static async Task RemedySubmit()
 
         { 
@@ -101,7 +104,6 @@ namespace Fourex.Droid
 
         }
         
-
         public static async Task NotificationSubmit()
 
         {
@@ -190,34 +192,96 @@ namespace Fourex.Droid
                 return value.ToString("yyyyMMddHHmmssffff");
             }
 
-        public async Task Get(string ext)
-        {
-            var localArrayList = new ArrayList();
-
-            
-                var client = new RestClient("http://localhost:59089/api/" + ext);
-                var request = new RestRequest(Method.GET);
-
-            client.ExecuteAsync(request, response =>
-            {
-                System.Diagnostics.Debug.WriteLine("response: " + response.Content);
-
-                string responseString = response.Content;
-                responseString = responseString.Replace("[", "").Replace("{", "").Replace("\"", "").Replace("]", "");
 
 
-                string[] item = responseString.Split('}');
+		public List<TicketObject> GetTicketObjects()
+		{
+			List<TicketObject> ItemsList = new List<TicketObject>();
 
-                while (item != null)
-                {
-                    localArrayList.Add(item);
-                }
+			var client = new RestClient("http://81.133.234.240/api/console/1");
+			var request = new RestRequest(Method.GET);
+			IRestResponse response =  client.Execute(request);
 
-            });
-            
-           
+			Console.WriteLine("Response: " + response.Content);
 
-        }
-    }
+			if(!string.IsNullOrEmpty(response.Content))
+			{
+				var respString = response.Content;
+				respString = respString.Replace("NewLine", "]NewLine");
+
+				while (respString.Contains("NewLine"))
+				{
+					var itemStrt = respString.IndexOf("NewLine")+9;
+					respString = respString.Remove(0, itemStrt);
+					var itemEnd = respString.IndexOf("]") - 3;
+					var item = respString.Substring(0, itemEnd);
+					itemEnd = itemEnd + 7;
+
+					respString = respString.Remove(0, itemEnd);
+					item = item.Replace(",", "\n");
+
+					if(item.Contains("Blue"))
+					{
+						item = item.Remove(0,5);
+						TicketObject t = new TicketObject(item, "#0054db");
+						ItemsList.Add(t);
+
+					}
+
+					else
+					{
+						item = item.Remove(0,6);
+						TicketObject t = new TicketObject(item, "#000000");
+						ItemsList.Add(t);
+
+					}
+
+
+				}
+
+				return ItemsList;
+			}
+
+			else
+			{
+				Toast.MakeText(Application.Context, "Cannot connect, please try again", ToastLength.Long).Show();
+				return null;
+			}
+
+		}
+
+
+
+	}
+
+	public class TicketObject 
+	{
+
+		private String mText;
+		private String colour;
+
+		public TicketObject(String text, String colour)
+		{
+			mText = text;
+			this.colour = colour;
+		}
+
+		public String getText()
+		{
+			return mText;
+		}
+
+		public String getColour()
+		{ 
+			return colour;
+		}
+
+
+
+	}
+	
+
+	
 }
+
 

@@ -92,25 +92,26 @@ namespace Fourex.Droid
 
         }
 
-		// TODO ENABLE MENU
-        //public override bool OnCreateOptionsMenu(IMenu menu)
-        //{
-        //    MenuInflater.Inflate(Resource.Menu.menu, menu);
-        //    return base.OnCreateOptionsMenu(menu);
-        //}
+	
+		public override bool OnCreateOptionsMenu(IMenu menu)
+		{
+			MenuInflater.Inflate(Resource.Menu.menu, menu);
+			return base.OnCreateOptionsMenu(menu);
+		}
 
-        //public override bool OnOptionsItemSelected(IMenuItem item)
-        //{
-        //    int id = item.ItemId;
-        //    if (id == Resource.Id.nav_alerts)
-        //    {
-        //        var intent = new Intent(this, typeof(AlertsActivity));
-        //        StartActivity(intent);
-        //        return true;
-        //    }
+		public override bool OnOptionsItemSelected(IMenuItem item)
+		{
+			int id = item.ItemId;
+			
+			if (id == Resource.Id.nav_ticket)
+			{
+				var intent = new Intent(this, typeof(TicketsActivity));
+				StartActivity(intent);
+				return true;
+			}
 
-        //    return base.OnOptionsItemSelected(item);
-        //}
+			return base.OnOptionsItemSelected(item);
+		}
 
-    }
+	}
 }
